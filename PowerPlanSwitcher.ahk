@@ -23,6 +23,7 @@ nameAndIcon := {"Power saver":"./icons/Power saver.ico"
     ,"High performance":"./icons/High performance.ico"
     ,"Ultimate Performance":"./icons/Ultimate Performance.ico"
     ,"any":"./icons/any.ico"}
+nameAndGUID := {}
 initializeProgram()
 
 #F4::
@@ -179,14 +180,39 @@ return
 ; }
 initializeProgram(){
     global nameAndIcon
-    ; global ifMonitoring
     global GUI_ID
+    global nameAndGUID
+    ; initialize tray icon
     currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
     RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
     if (FileExist(nameAndIcon[M1])){
         Menu, Tray, Icon, % nameAndIcon[M1]
     }
-    IniWrite, %a_scriptdir%, .\settings\setting.ini, WorkingDir, Dir
+    ; IniWrite, %a_scriptdir%, .\settings\setting.ini, WorkingDir, Dir
+    ; initialize power plans' names and GUIDs
+    allPowerSchemes := StdOutToVar("powercfg -l")
+    Pos := 1
+    Pos2 := 1
+    GUIDTemp := 0
+    While Pos {
+        if (Pos = 1){
+            Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
+            Pos2:=RegExMatch(allPowerSchemes, "GUID: (.*?)  \(", N, Pos2+StrLen(N1) )
+            GUIDTemp := N1
+            ; MsgBox % N1
+        }
+        else {
+            Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
+            Pos2:=RegExMatch(allPowerSchemes, "GUID: (.*?)  \(", N, Pos2+StrLen(N1) )
+            if(StrLen(M1) != 0){
+                IniWrite, %GUIDTemp%, .\setting.ini, PowerPlans, %M1%
+                nameAndGUID[M1] := GUIDTemp
+                ; MsgBox % nameAndGUID[M1]
+                GUIDTemp := N1
+            }
+        }
+    }
+    ; start AC/DC auto switch
     #Persistent
     SetTimer, powerPlanAutoManage, 100
 }
@@ -213,7 +239,6 @@ getAllPowerSchemes(){
         IfPlanListShowing := 1
     }
     allPowerSchemes := StdOutToVar("powercfg -l")
-    ; StringSplit, stringOut, allPowerSchemes, "()"
     powerSchemeArray := []
     Pos := 1
     While Pos {
