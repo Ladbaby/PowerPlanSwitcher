@@ -148,16 +148,16 @@
         return this.state:= 1
     }
     addIcon(stringTemp){
-        if (stringTemp = "Power saver"){
+        if (stringTemp = "Power saver" || stringTemp = "节能"){
             return "    🍃 Power Saver"
         }
-        else if (stringTemp = "Balanced"){
+        else if (stringTemp = "Balanced" || stringTemp = "平衡"){
             return "    ☯️ Balanced"
         }
         else if (stringTemp = "Cooler Gaming"){
             return "    🌀 Cooler Gaming"
         }
-        else if (stringTemp = "High performance"){
+        else if (stringTemp = "High performance" || stringTemp = "高性能"){
             return "    🚀 High Performance"
         }
         else if (stringTemp = "Ultimate Performance"){

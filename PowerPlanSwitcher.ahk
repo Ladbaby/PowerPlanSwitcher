@@ -21,7 +21,8 @@ nameAndIcon := {"Power saver":"./icons/Power saver.ico"
     ,"Balanced":"./icons/Balanced.ico"
     ,"Cooler Gaming":"./icons/Cooler Gaming.ico"
     ,"High performance":"./icons/High performance.ico"
-    ,"Ultimate Performance":"./icons/Ultimate Performance.ico"}
+    ,"Ultimate Performance":"./icons/Ultimate Performance.ico"
+    ,"any":"./icons/any.ico"}
 initializeProgram()
 
 #F4::
@@ -58,13 +59,13 @@ return
 
         currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
         RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
-        if (M1 = "Power saver"){
+        if (M1 = "Power saver" || M1 = "节能"){
             counter := -1
         }
-        else if (M1 = "Balanced"){
+        else if (M1 = "Balanced" || M1 = "平衡" || M1 = "Windows"){
             counter := 0
         }
-        else if (M1 = "High performance" || M1 = "Cooler Gaming" || M1 = "Ultimate Performance"){
+        else if (M1 = "High performance" || M1 = "Cooler Gaming" || M1 = "Ultimate Performance" || M1 = "高性能" || M1 = "卓越性能"){
             counter := 1
         }
         if(counter = 0) {
@@ -222,12 +223,14 @@ getAllPowerSchemes(){
         else {
             Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
             if(StrLen(M1) != 0){
+                M1 := translateToEn(M1)
                 powerSchemeArray.push(M1)
             }
         }
     }
     currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
     RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+    M1 := translateToEn(M1)
     powerSchemeArray.push(M1)
 
     planListObj := New PlanList
@@ -292,11 +295,14 @@ monitorForSelection(){
     ; }
     ; Sleep, 100
     schemeTemp := planListObj.getSelectedScheme()
+    schemeTemp := translateToEn(schemeTemp)
     if (schemeTemp != ""){
-        osdTemp := New OSD
-        commandTemp := nameAndCommand[schemeTemp]
-        Run, %commandTemp%
-        DisplayOSD(osdTemp, schemeTemp)
+        if (nameAndCommand[schemeTemp] != ""){
+            osdTemp := New OSD
+            commandTemp := nameAndCommand[schemeTemp]
+            Run, %commandTemp%
+            DisplayOSD(osdTemp, schemeTemp)
+        }
         planListObj.hide()
         planListObj.destroy()
         planListObj := 0
@@ -310,27 +316,28 @@ displayOSD(osdTemp, schemeTemp){
     global nameAndIcon
     if (schemeTemp = "Power saver"){
         osdTemp.showAndHide("🍃 Power Saver", 1) ; 
-        Menu, Tray, Icon, % nameAndIcon[schemeTemp]
     }
     else if (schemeTemp = "Balanced"){
         osdTemp.showAndHide("☯️ Balanced")
-        Menu, Tray, Icon, % nameAndIcon[schemeTemp]
     }
     else if (schemeTemp = "Cooler Gaming"){
         osdTemp.showAndHide("🌀 Cooler Gaming")
-        Menu, Tray, Icon, % nameAndIcon[schemeTemp]
     }
     else if (schemeTemp = "High performance"){
         osdTemp.showAndHide("🚀 High Performance", 0)
-        Menu, Tray, Icon, % nameAndIcon[schemeTemp]
     }
     else if (schemeTemp = "Ultimate Performance"){
         osdTemp.showAndHide("☢ Ultimate Performance", 0)
+    }
+    else {
+        osdTemp.showAndHide(stringTemp)
+    }
+    if (FileExist(nameAndIcon[schemeTemp])){
         Menu, Tray, Icon, % nameAndIcon[schemeTemp]
     }
-    ; else {
-    ;     osdTemp.showAndHide(stringTemp)
-    ; }
+    else {
+        Menu, Tray, Icon, % nameAndIcon["any"]
+    }
 }
 
 
@@ -402,5 +409,18 @@ getPowerState()
     acLineStatus := GetInteger(powerStatus, 0, false, 1)
 }
 
-
+translateToEn(stringTemp){
+    if (stringTemp = "节能"){
+        return "Power saver"
+    }
+    else if (stringTemp = "平衡"){
+        return "Balanced"
+    }
+    else if (stringTemp = "高性能"){
+        return "High performance"
+    }
+    else {
+        return stringTemp
+    }
+}
 
