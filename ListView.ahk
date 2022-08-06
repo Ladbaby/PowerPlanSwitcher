@@ -100,7 +100,7 @@
         Gui, Show, % Format("NoActivate NA x{} y{}", this.pos.x - (widthTemp) * this.scale, this.pos.y - this.scale * (ListViewHeightTemp * 35))
         ; make the PlanList corners rounded
         WinGetPos,,,Width, Height, % "ahk_id " . this.hwnd
-        WinSet, Region, % Format("w{} h{} 10-5 R{3:i}-{3:i}", Width - 10, Height - 5, 30*this.scale), % "ahk_id " . this.hwnd
+        WinSet, Region, % Format("w{} h{} 10-5 R{3:i}-{3:i}", Width - 10, Height - 5, 15*this.scale), % "ahk_id " . this.hwnd
         ;set the PlanList transparency
         ; WinSet, Transparent, 200, % "ahk_id " . this.hwnd
         SetWinDelay -1
@@ -127,8 +127,14 @@
             if (stringTemp = "    🍃 Power saver"){
                 PlanList.selectedScheme :=  "Power Saver"
             }
+            else if (stringTemp = "    🍃 节能"){
+                PlanList.selectedScheme :=  "节能"
+            }
             else if (stringTemp = "    ☯️ Balanced"){
                 PlanList.selectedScheme :=  "Balanced"
+            }
+            else if (stringTemp = "    ☯️ 平衡"){
+                PlanList.selectedScheme := "平衡"
             }
             else if (stringTemp = "    🌀 Cooler Gaming"){
                 PlanList.selectedScheme :=  "Cooler Gaming"
@@ -136,8 +142,14 @@
             else if (stringTemp = "    🚀 High performance"){
                 PlanList.selectedScheme :=  "High Performance"
             }
+            else if (stringTemp = "    🚀 高性能"){
+                PlanList.selectedScheme :=  "高性能"
+            }
             else if (stringTemp = "    ☢ Ultimate Performance"){
                 PlanList.selectedScheme :=  "Ultimate Performance"
+            }
+            else if (stringTemp = "    ☢ 卓越性能"){
+                PlanList.selectedScheme :=  "卓越性能"
             }
             else {
                 PlanList.selectedScheme :=  LTrim(stringTemp, " `t")
@@ -148,20 +160,32 @@
         return this.state:= 1
     }
     addIcon(stringTemp){
-        if (stringTemp = "Power saver" || stringTemp = "节能"){
+        if (stringTemp = "Power saver"){
             return "    🍃 Power Saver"
         }
-        else if (stringTemp = "Balanced" || stringTemp = "平衡"){
+        else if (stringTemp = "节能"){
+            return "    🍃 节能"
+        }
+        else if (stringTemp = "Balanced"){
             return "    ☯️ Balanced"
+        }
+        else if (stringTemp = "平衡"){
+            return "    ☯️ 平衡"
         }
         else if (stringTemp = "Cooler Gaming"){
             return "    🌀 Cooler Gaming"
         }
-        else if (stringTemp = "High performance" || stringTemp = "高性能"){
+        else if (stringTemp = "High performance"){
             return "    🚀 High Performance"
+        }
+        else if (stringTemp = "高性能"){
+            return "    🚀 高性能"
         }
         else if (stringTemp = "Ultimate Performance"){
             return "    ☢ Ultimate Performance"
+        }
+        else if (stringTemp = "卓越性能"){
+            return "    ☢ 卓越性能"
         }
         else {
             return "    " . stringTemp

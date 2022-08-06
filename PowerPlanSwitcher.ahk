@@ -16,13 +16,15 @@ nameAndCommand := {"Power saver":".\vbs\Power_Saver.vbs"
     ,"Balanced":".\vbs\Balanced.vbs"
     ,"Cooler Gaming":".\vbs\Cooler_Gaming.vbs"
     ,"High performance":".\vbs\High_Performance.vbs"
-    ,"Ultimate Performance":".\vbs\Ultimate_Performance.vbs"}
-nameAndIcon := {"Power saver":"./icons/Power saver.ico"
-    ,"Balanced":"./icons/Balanced.ico"
-    ,"Cooler Gaming":"./icons/Cooler Gaming.ico"
-    ,"High performance":"./icons/High performance.ico"
-    ,"Ultimate Performance":"./icons/Ultimate Performance.ico"
-    ,"any":"./icons/any.ico"}
+    ,"Ultimate Performance":".\vbs\Ultimate_Performance.vbs"
+    ,"any":".\vbs\any.vbs "}
+nameAndIcon := {"Power saver":".\icons\Power saver.ico"
+    ,"Balanced":".\icons\Balanced.ico"
+    ,"Cooler Gaming":".\icons\Cooler Gaming.ico"
+    ,"High performance":".\icons\High performance.ico"
+    ,"Ultimate Performance":".\icons\Ultimate Performance.ico"
+    ,"any":".\icons\any.ico"}
+nameAndGUID := {}
 initializeProgram()
 
 #F4::
@@ -130,11 +132,19 @@ Enter::
         ; global ifMonitoring
         global focusedSchemeName
         global nameAndCommand
+        global nameAndGUID
         if (focusedSchemeName != ""){
+            focusedSchemeName_en := translateToEn(focusedSchemeName)
             osdTemp := New OSD
-            commandTemp := nameAndCommand[focusedSchemeName]
-            Run, %commandTemp%
-            DisplayOSD(osdTemp, focusedSchemeName)
+            if (focusedSchemeName_en != "Power saver" && focusedSchemeName_en != "Balanced" && focusedSchemeName_en != "Cooler Gaming" && focusedSchemeName_en != "High performance" && focusedSchemeName_en != "Ultimate Performance"){
+                Run, % nameAndCommand["any"] . nameAndGUID[focusedSchemeName_en]
+                DisplayOSD(osdTemp, focusedSchemeName)
+            }
+            else{
+                ; commandTemp := nameAndCommand[focusedSchemeName]
+                Run, % nameAndCommand[focusedSchemeName]
+                DisplayOSD(osdTemp, focusedSchemeName)
+            }
         }
         planListObj.hide()
         planListObj.destroy()
@@ -148,27 +158,27 @@ return
 
 ; #If IfPlanListShowing
 ~LWin Up::
-    autoSetPlan(){
-        SetTimer, monitorForSelection, Off
-        global planListObj
-        global IfPlanListShowing
-        ; global ifMonitoring
-        global focusedSchemeName
-        global nameAndCommand
-        if (focusedSchemeName != ""){
-            osdTemp := New OSD
-            commandTemp := nameAndCommand[focusedSchemeName]
-            Run, %commandTemp%
-            DisplayOSD(osdTemp, focusedSchemeName)
-        }
-        planListObj.hide()
-        planListObj.destroy()
-        planListObj := 0
-        IfPlanListShowing := 0
-        ; ifMonitoring := 0
-        focusedSchemeName := ""
-    }
-    autoSetPlan()
+    ; autoSetPlan(){
+    ;     SetTimer, monitorForSelection, Off
+    ;     global planListObj
+    ;     global IfPlanListShowing
+    ;     ; global ifMonitoring
+    ;     global focusedSchemeName
+    ;     global nameAndCommand
+    ;     if (focusedSchemeName != ""){
+    ;         osdTemp := New OSD
+    ;         commandTemp := nameAndCommand[focusedSchemeName]
+    ;         Run, %commandTemp%
+    ;         DisplayOSD(osdTemp, focusedSchemeName)
+    ;     }
+    ;     planListObj.hide()
+    ;     planListObj.destroy()
+    ;     planListObj := 0
+    ;     IfPlanListShowing := 0
+    ;     ; ifMonitoring := 0
+    ;     focusedSchemeName := ""
+    ; }
+    setPlan()
 return
 
 #If
@@ -179,14 +189,40 @@ return
 ; }
 initializeProgram(){
     global nameAndIcon
-    ; global ifMonitoring
     global GUI_ID
+    global nameAndGUID
+    ; initialize tray icon
     currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
     RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
     if (FileExist(nameAndIcon[M1])){
         Menu, Tray, Icon, % nameAndIcon[M1]
     }
-    IniWrite, %a_scriptdir%, .\settings\setting.ini, WorkingDir, Dir
+    ; IniWrite, %a_scriptdir%, .\settings\setting.ini, WorkingDir, Dir
+    ; initialize power plans' names and GUIDs
+    allPowerSchemes := StdOutToVar("powercfg -l")
+    Pos := 1
+    Pos2 := 1
+    GUIDTemp := 0
+    While Pos {
+        if (Pos = 1){
+            Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
+            Pos2:=RegExMatch(allPowerSchemes, "GUID: (.*?)  \(", N, Pos2+StrLen(N1) )
+            GUIDTemp := N1
+            ; MsgBox % N1
+        }
+        else {
+            Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
+            Pos2:=RegExMatch(allPowerSchemes, "GUID: (.*?)  \(", N, Pos2+StrLen(N1) )
+            if(StrLen(M1) != 0){
+                M1_en := translateToEn(M1)
+                IniWrite, %GUIDTemp%, .\setting.ini, PowerPlans, %M1_en%
+                nameAndGUID[M1_en] := GUIDTemp
+                ; MsgBox % nameAndGUID[M1_en]
+                GUIDTemp := N1
+            }
+        }
+    }
+    ; start AC/DC auto switch
     #Persistent
     SetTimer, powerPlanAutoManage, 100
 }
@@ -213,7 +249,6 @@ getAllPowerSchemes(){
         IfPlanListShowing := 1
     }
     allPowerSchemes := StdOutToVar("powercfg -l")
-    ; StringSplit, stringOut, allPowerSchemes, "()"
     powerSchemeArray := []
     Pos := 1
     While Pos {
@@ -223,14 +258,14 @@ getAllPowerSchemes(){
         else {
             Pos:=RegExMatch(allPowerSchemes, "\((.*?)\)", M, Pos+StrLen(M1) )
             if(StrLen(M1) != 0){
-                M1 := translateToEn(M1)
+                ; M1 := translateToEn(M1)
                 powerSchemeArray.push(M1)
             }
         }
     }
     currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
     RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
-    M1 := translateToEn(M1)
+    ; M1 := translateToEn(M1)
     powerSchemeArray.push(M1)
 
     planListObj := New PlanList
@@ -279,6 +314,7 @@ StdOutToVar(cmd)
 	return sOutput
 }
 Exit() {
+    FileDelete, .\setting.ini
     ExitApp
 }
 monitorForSelection(){
@@ -287,6 +323,7 @@ monitorForSelection(){
     global nameAndCommand
     ; global ifMonitoring
     global GUI_ID
+    global nameAndGUID
     ; SetTimer LoopStart, 100
     ; LoopStart:
     ; if (ifMonitoring = 0){
@@ -295,14 +332,19 @@ monitorForSelection(){
     ; }
     ; Sleep, 100
     schemeTemp := planListObj.getSelectedScheme()
-    schemeTemp := translateToEn(schemeTemp)
     if (schemeTemp != ""){
-        if (nameAndCommand[schemeTemp] != ""){
-            osdTemp := New OSD
-            commandTemp := nameAndCommand[schemeTemp]
+        schemeTemp_en := translateToEn(schemeTemp)
+        osdTemp := New OSD
+        if (nameAndCommand[schemeTemp_en] != ""){
+            commandTemp := nameAndCommand[schemeTemp_en]
             Run, %commandTemp%
-            DisplayOSD(osdTemp, schemeTemp)
         }
+        else{
+            commandTemp := nameAndCommand["any"]
+            ; MsgBox % nameAndGUID[schemeTemp_en]
+            Run, % commandTemp . nameAndGUID[schemeTemp_en]
+        }
+        DisplayOSD(osdTemp, schemeTemp)
         planListObj.hide()
         planListObj.destroy()
         planListObj := 0
@@ -317,8 +359,14 @@ displayOSD(osdTemp, schemeTemp){
     if (schemeTemp = "Power saver"){
         osdTemp.showAndHide("🍃 Power Saver", 1) ; 
     }
+    else if (schemeTemp = "节能"){
+        osdTemp.showAndHide("🍃 节能", 1) ; 
+    }
     else if (schemeTemp = "Balanced"){
         osdTemp.showAndHide("☯️ Balanced")
+    }
+    else if (schemeTemp = "平衡"){
+        osdTemp.showAndHide("☯️ 平衡")
     }
     else if (schemeTemp = "Cooler Gaming"){
         osdTemp.showAndHide("🌀 Cooler Gaming")
@@ -326,14 +374,21 @@ displayOSD(osdTemp, schemeTemp){
     else if (schemeTemp = "High performance"){
         osdTemp.showAndHide("🚀 High Performance", 0)
     }
+    else if (schemeTemp = "高性能"){
+        osdTemp.showAndHide("🚀 高性能", 0)
+    }
     else if (schemeTemp = "Ultimate Performance"){
         osdTemp.showAndHide("☢ Ultimate Performance", 0)
     }
-    else {
-        osdTemp.showAndHide(stringTemp)
+    else if (schemeTemp = "卓越性能"){
+        osdTemp.showAndHide("☢ 卓越性能", 0)
     }
-    if (FileExist(nameAndIcon[schemeTemp])){
-        Menu, Tray, Icon, % nameAndIcon[schemeTemp]
+    else {
+        osdTemp.showAndHide(schemeTemp)
+    }
+    schemeTemp_en := translateToEn(schemeTemp)
+    if (FileExist(nameAndIcon[schemeTemp_en])){
+        Menu, Tray, Icon, % nameAndIcon[schemeTemp_en]
     }
     else {
         Menu, Tray, Icon, % nameAndIcon["any"]
@@ -418,6 +473,9 @@ translateToEn(stringTemp){
     }
     else if (stringTemp = "高性能"){
         return "High performance"
+    }
+    else if (stringTemp = "卓越性能"){
+        return "Ultimate Performance"
     }
     else {
         return stringTemp
