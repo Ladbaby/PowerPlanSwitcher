@@ -25,6 +25,9 @@ nameAndIcon := {"Power saver":".\icons\Power saver.ico"
     ,"Ultimate Performance":".\icons\Ultimate Performance.ico"
     ,"any":".\icons\any.ico"}
 nameAndGUID := {}
+defaultPowerSchemeArray := ["Power saver", "Balanced", "High performance"]
+ACMode:=0
+DCMode:=0
 initializeProgram()
 
 #F4::
@@ -54,52 +57,60 @@ return
     change()
     {
         global nameAndCommand
+        global defaultPowerSchemeArray
 
-        message := New OSD
-        static counter := 0
-        static previousCounter := 0
+        static counter := 2
+        static previousCounter := 2
 
-        currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
-        RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
-        if (M1 = "Power saver" || M1 = "节能"){
-            counter := -1
-        }
-        else if (M1 = "Balanced" || M1 = "平衡" || M1 = "Windows"){
-            counter := 0
-        }
-        else if (M1 = "High performance" || M1 = "Cooler Gaming" || M1 = "Ultimate Performance" || M1 = "高性能" || M1 = "卓越性能"){
+
+        ; currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
+        ; RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+        M1 := translateToEn(getActiveScheme())
+        if (M1 = defaultPowerSchemeArray[1]){
             counter := 1
         }
-        if(counter = 0) {
-            if (previousCounter = 1) {
-                Run, % nameAndCommand["Power saver"]
+        else if (M1 = defaultPowerSchemeArray[2]){
+            counter := 2
+        }
+        else if (M1 = defaultPowerSchemeArray[3]){
+            counter := 3
+        }
+        if(counter = 2) {
+            if (previousCounter = 3) {
+                Run, % nameAndCommand[defaultPowerSchemeArray[1]]
                 ; Run, .\vbs\Power_Saver.vbs
-                counter := -1
-                previousCounter := 0
-                DisplayOSD(message, "Power saver")
+                counter := 1
+                previousCounter := 2
+                ; DisplayOSD(message, "Power saver")
                 ; message.showAndHide("🍃 Power Saver", 1)
             } else {
-                Run, % nameAndCommand["High performance"]
+                Run, % nameAndCommand[defaultPowerSchemeArray[3]]
                 ; Run, .\vbs\High_Performance.vbs
-                counter := 1
-                previousCounter := 0
-                DisplayOSD(message, "High performance")
+                counter := 3
+                previousCounter := 2
+                ; DisplayOSD(message, "High performance")
                 ; message.showAndHide("🚀 High Performance", 0)
             }
-        } else if (counter = 1) {
-            Run, % nameAndCommand["Balanced"]
+        } else if (counter = 3) {
+            Run, % nameAndCommand[defaultPowerSchemeArray[2]]
             ; Run, .\vbs\Balanced.vbs
-            counter := 0
-            previousCounter := 1
-            DisplayOSD(message, "Balanced")
+            counter := 2
+            previousCounter := 3
+            ; DisplayOSD(message, "Balanced")
             ; message.showAndHide("☯️ Balanced")
         } else {
-            Run, % nameAndCommand["Balanced"]
+            Run, % nameAndCommand[defaultPowerSchemeArray[2]]
             ; Run, .\vbs\Balanced.vbs
-            counter := 0
-            previousCounter := -1
-            DisplayOSD(message, "Balanced")
+            counter := 2
+            previousCounter := 1
+            ; DisplayOSD(message, "Balanced")
             ; message.showAndHide("☯️ Balanced")
+        }
+        sleep, 500
+        osdTemp := New OSD
+        DisplayOSD(osdTemp, getActiveScheme())
+        if (not checkIfActivated(defaultPowerSchemeArray[counter])){
+            counter := previousCounter
         }
     }
     change()
@@ -133,22 +144,27 @@ Enter::
         global focusedSchemeName
         global nameAndCommand
         global nameAndGUID
+
+        ; close the plan list ui earlier, or it may seems too slow
+        planListObj.hide()
+        planListObj.destroy()
+        planListObj := 0
+
         if (focusedSchemeName != ""){
             focusedSchemeName_en := translateToEn(focusedSchemeName)
             osdTemp := New OSD
             if (focusedSchemeName_en != "Power saver" && focusedSchemeName_en != "Balanced" && focusedSchemeName_en != "Cooler Gaming" && focusedSchemeName_en != "High performance" && focusedSchemeName_en != "Ultimate Performance"){
                 Run, % nameAndCommand["any"] . nameAndGUID[focusedSchemeName_en]
-                DisplayOSD(osdTemp, focusedSchemeName)
             }
             else{
                 ; commandTemp := nameAndCommand[focusedSchemeName]
                 Run, % nameAndCommand[focusedSchemeName]
-                DisplayOSD(osdTemp, focusedSchemeName)
+                ; DisplayOSD(osdTemp, focusedSchemeName)
             }
+            sleep, 500
+            DisplayOSD(osdTemp, getActiveScheme())
         }
-        planListObj.hide()
-        planListObj.destroy()
-        planListObj := 0
+        
         IfPlanListShowing := 0
         ; ifMonitoring := 0
         focusedSchemeName := ""
@@ -191,14 +207,22 @@ initializeProgram(){
     global nameAndIcon
     global GUI_ID
     global nameAndGUID
+    global defaultPowerSchemeArray
+    global ACMode
+    global DCMode
     ; initialize tray icon
-    currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
-    RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
-    if (FileExist(nameAndIcon[M1])){
-        Menu, Tray, Icon, % nameAndIcon[M1]
+    ; currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
+    ; RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+    M1 := getActiveScheme()
+    M1_en := translateToEn(M1)
+    if (FileExist(nameAndIcon[M1_en])){
+        Menu, Tray, Icon, % nameAndIcon[M1_en]
     }
-    ; IniWrite, %a_scriptdir%, .\settings\setting.ini, WorkingDir, Dir
+    else {
+        Menu, Tray, Icon, % nameAndIcon["any"]
+    }
     ; initialize power plans' names and GUIDs
+    IniDelete, .\setting.ini, PowerPlans
     allPowerSchemes := StdOutToVar("powercfg -l")
     Pos := 1
     Pos2 := 1
@@ -217,11 +241,20 @@ initializeProgram(){
                 M1_en := translateToEn(M1)
                 IniWrite, %GUIDTemp%, .\setting.ini, PowerPlans, %M1_en%
                 nameAndGUID[M1_en] := GUIDTemp
-                ; MsgBox % nameAndGUID[M1_en]
                 GUIDTemp := N1
             }
         }
     }
+    ; initialize 3 default modes for win+f5
+    Loop 3{
+        IniRead, OutputVar, .\setting.ini, DefaultThreeModes, %A_Index%
+        defaultPowerSchemeArray.push(OutputVar)
+    }
+    ; initialize AC/DC modes to switch to
+    IniRead, AC, .\setting.ini, ACDCModes, Plugged In
+    IniRead, DC, .\setting.ini, ACDCModes, On Battery
+    ACMode := AC
+    DCMode := DC
     ; start AC/DC auto switch
     #Persistent
     SetTimer, powerPlanAutoManage, 100
@@ -263,8 +296,9 @@ getAllPowerSchemes(){
             }
         }
     }
-    currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
-    RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+    ; currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
+    ; RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+    M1 := getActiveScheme()
     ; M1 := translateToEn(M1)
     powerSchemeArray.push(M1)
 
@@ -314,7 +348,7 @@ StdOutToVar(cmd)
 	return sOutput
 }
 Exit() {
-    FileDelete, .\setting.ini
+    ; FileDelete, .\setting.ini
     ExitApp
 }
 monitorForSelection(){
@@ -344,7 +378,9 @@ monitorForSelection(){
             ; MsgBox % nameAndGUID[schemeTemp_en]
             Run, % commandTemp . nameAndGUID[schemeTemp_en]
         }
-        DisplayOSD(osdTemp, schemeTemp)
+        sleep, 500
+        DisplayOSD(osdTemp, getActiveScheme())
+        ; DisplayOSD(osdTemp, schemeTemp)
         planListObj.hide()
         planListObj.destroy()
         planListObj := 0
@@ -400,6 +436,9 @@ powerPlanAutoManage()
 {
     Global
     getPowerState()
+    ; ACMode
+    ; DCMode
+    ; nameAndCommand
     ; MsgBox, wtf
     
     ; if ( loopCounter < 1)	;to manually retrieve currentPowerScheme only on initial run
@@ -415,11 +454,11 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Offline
-            Run, .\vbs\Balanced.vbs
+            Run, % nameAndCommand[translateToEn(DCMode)]
             powerStateChange:=1
-            Sleep, 2000		;wait for asus's osd
+            sleep, 5000		;wait for asus's osd
             ; message.showAndHide("☯️ Balanced")
-            DisplayOSD(message, "Balanced")
+            DisplayOSD(message, getActiveScheme())
         }
     }
     Else If acLineStatus = 1	;if on AC power
@@ -428,11 +467,12 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Online
-            Run, .\vbs\Balanced.vbs
+            Run, % nameAndCommand[translateToEn(ACMode)]
+            ; Run, .\vbs\Balanced.vbs
             powerStateChange:=2
-            Sleep, 2000		;just slowing it down for performance
+            sleep, 5000
             ; message.showAndHide("☯️ Balanced")
-            DisplayOSD(message, "Balanced")
+            DisplayOSD(message, getActiveScheme())
         }
     }
 }
@@ -482,3 +522,20 @@ translateToEn(stringTemp){
     }
 }
 
+getActiveScheme(){
+    currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
+    RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
+    return M1
+}
+
+checkIfActivated(targetScheme){
+    if (targetScheme = getActiveScheme()){
+        return true
+    }
+    else {
+        return false
+    }
+}
+; toString(num){
+;     return "" . num
+; }
