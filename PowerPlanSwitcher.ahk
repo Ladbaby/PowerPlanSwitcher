@@ -12,11 +12,11 @@ IfPlanListShowing := 0
 planListObj := 0
 focusedSchemeName := ""
 GUI_ID := 0
-nameAndCommand := {"Power saver":".\vbs\Power_Saver.vbs"
-    ,"Balanced":".\vbs\Balanced.vbs"
-    ,"Cooler Gaming":".\vbs\Cooler_Gaming.vbs"
-    ,"High performance":".\vbs\High_Performance.vbs"
-    ,"Ultimate Performance":".\vbs\Ultimate_Performance.vbs"
+nameAndCommand := {"Power saver":".\vbs\Power_Saver.vbs "
+    ,"Balanced":".\vbs\Balanced.vbs "
+    ,"Cooler Gaming":".\vbs\Cooler_Gaming.vbs "
+    ,"High performance":".\vbs\High_Performance.vbs "
+    ,"Ultimate Performance":".\vbs\Ultimate_Performance.vbs "
     ,"any":".\vbs\any.vbs "}
 nameAndIcon := {"Power saver":".\icons\Power saver.ico"
     ,"Balanced":".\icons\Balanced.ico"
@@ -24,12 +24,18 @@ nameAndIcon := {"Power saver":".\icons\Power saver.ico"
     ,"High performance":".\icons\High performance.ico"
     ,"Ultimate Performance":".\icons\Ultimate Performance.ico"
     ,"any":".\icons\any.ico"}
+; en
 nameAndGUID := {}
+; not en
 defaultPowerSchemeArray := ["Power saver", "Balanced", "High performance"]
+; ifACDCEnabled := 1
 ACMode:=0
 DCMode:=0
+ifWinF4Enabled := 1
+ifWinF5Enabled := 1
 initializeProgram()
 
+#if ifWinF4Enabled
 #F4::
     switchByHotKey(){
         ; MsgBox, wtf
@@ -52,11 +58,14 @@ initializeProgram()
     }
     switchByHotKey()
 return
+#if
 
+#if ifWinF5Enabled
 #F5::
     change()
     {
         global nameAndCommand
+        global nameAndGUID
         global defaultPowerSchemeArray
 
         static counter := 2
@@ -77,44 +86,41 @@ return
         }
         if(counter = 2) {
             if (previousCounter = 3) {
-                Run, % nameAndCommand[defaultPowerSchemeArray[1]]
-                ; Run, .\vbs\Power_Saver.vbs
+                ; Run, % nameAndCommand[defaultPowerSchemeArray[1]]
                 counter := 1
                 previousCounter := 2
-                ; DisplayOSD(message, "Power saver")
-                ; message.showAndHide("🍃 Power Saver", 1)
             } else {
-                Run, % nameAndCommand[defaultPowerSchemeArray[3]]
-                ; Run, .\vbs\High_Performance.vbs
+                ; Run, % nameAndCommand[defaultPowerSchemeArray[3]]
                 counter := 3
                 previousCounter := 2
-                ; DisplayOSD(message, "High performance")
-                ; message.showAndHide("🚀 High Performance", 0)
             }
         } else if (counter = 3) {
-            Run, % nameAndCommand[defaultPowerSchemeArray[2]]
-            ; Run, .\vbs\Balanced.vbs
+            ; Run, % nameAndCommand[defaultPowerSchemeArray[2]]
             counter := 2
             previousCounter := 3
-            ; DisplayOSD(message, "Balanced")
-            ; message.showAndHide("☯️ Balanced")
         } else {
-            Run, % nameAndCommand[defaultPowerSchemeArray[2]]
-            ; Run, .\vbs\Balanced.vbs
+            ; Run, % nameAndCommand[defaultPowerSchemeArray[2]]
             counter := 2
             previousCounter := 1
-            ; DisplayOSD(message, "Balanced")
-            ; message.showAndHide("☯️ Balanced")
         }
-        sleep, 500
         osdTemp := New OSD
-        DisplayOSD(osdTemp, getActiveScheme())
+        temp := translateToEn(defaultPowerSchemeArray[counter])
+        if (temp = "Power saver" || temp = "Balanced" || temp = "Cooler Gaming" || temp = "High performance" || temp = "Ultimate Performance"){
+            Run, % nameAndCommand[temp] . nameAndGUID[temp]
+        }
+        else{
+            Run, % nameAndCommand["any"] . nameAndGUID[temp]
+        }
+        DisplayOSD(osdTemp, defaultPowerSchemeArray[counter])
+        ; sleep, 500
+        ; DisplayOSD(osdTemp, getActiveScheme())
         if (not checkIfActivated(defaultPowerSchemeArray[counter])){
             counter := previousCounter
         }
     }
     change()
 Return
+#if
 
 #If IfPlanListShowing
 Esc::
@@ -134,7 +140,7 @@ Esc::
     closePlanList()
 return
 
-#If IfPlanListShowing
+; #If IfPlanListShowing
 Enter::
     setPlan(){
         SetTimer, monitorForSelection, Off
@@ -157,12 +163,11 @@ Enter::
                 Run, % nameAndCommand["any"] . nameAndGUID[focusedSchemeName_en]
             }
             else{
-                ; commandTemp := nameAndCommand[focusedSchemeName]
-                Run, % nameAndCommand[focusedSchemeName]
-                ; DisplayOSD(osdTemp, focusedSchemeName)
+                Run, % nameAndCommand[focusedSchemeName_en] . nameAndGUID[focusedSchemeName_en]
             }
-            sleep, 500
-            DisplayOSD(osdTemp, getActiveScheme())
+            DisplayOSD(osdTemp, focusedSchemeName)
+            ; sleep, 500
+            ; DisplayOSD(osdTemp, getActiveScheme())
         }
         
         IfPlanListShowing := 0
@@ -174,35 +179,10 @@ return
 
 ; #If IfPlanListShowing
 ~LWin Up::
-    ; autoSetPlan(){
-    ;     SetTimer, monitorForSelection, Off
-    ;     global planListObj
-    ;     global IfPlanListShowing
-    ;     ; global ifMonitoring
-    ;     global focusedSchemeName
-    ;     global nameAndCommand
-    ;     if (focusedSchemeName != ""){
-    ;         osdTemp := New OSD
-    ;         commandTemp := nameAndCommand[focusedSchemeName]
-    ;         Run, %commandTemp%
-    ;         DisplayOSD(osdTemp, focusedSchemeName)
-    ;     }
-    ;     planListObj.hide()
-    ;     planListObj.destroy()
-    ;     planListObj := 0
-    ;     IfPlanListShowing := 0
-    ;     ; ifMonitoring := 0
-    ;     focusedSchemeName := ""
-    ; }
     setPlan()
 return
-
 #If
 
-; Loop {
-;     powerPlanAutoManage()
-;     Sleep, 100 ;just slowing it down for performance
-; }
 initializeProgram(){
     global nameAndIcon
     global GUI_ID
@@ -210,9 +190,10 @@ initializeProgram(){
     global defaultPowerSchemeArray
     global ACMode
     global DCMode
+    global ifWinF4Enabled
+    global ifWinF5Enabled
+    ; global ifACDCEnabled
     ; initialize tray icon
-    ; currentPowerScheme := StdOutToVar("powercfg -getactivescheme")
-    ; RegExMatch(currentPowerScheme, "\((.*?)\)", M, 1+StrLen(M1) )
     M1 := getActiveScheme()
     M1_en := translateToEn(M1)
     if (FileExist(nameAndIcon[M1_en])){
@@ -249,15 +230,47 @@ initializeProgram(){
     Loop 3{
         IniRead, OutputVar, .\setting.ini, DefaultThreeModes, %A_Index%
         defaultPowerSchemeArray.push(OutputVar)
+        if(nameAndGUID[OutputVar] = ""){
+            MsgBox, Warning: %OutputVar% does not exist on your computer, Win+F5 shortcut will be disabled
+            ifWinF5Enabled := false
+        }
     }
     ; initialize AC/DC modes to switch to
-    IniRead, AC, .\setting.ini, ACDCModes, Plugged In
-    IniRead, DC, .\setting.ini, ACDCModes, On Battery
-    ACMode := AC
-    DCMode := DC
+    IniRead, ifEnabled, .\setting.ini, ACDCModes, Enabled
+    if (ifEnabled){
+        IniRead, AC, .\setting.ini, ACDCModes, Plugged In
+        IniRead, DC, .\setting.ini, ACDCModes, On Battery
+        if(nameAndGUID[AC] = ""){
+            MsgBox, Warning: Cannot switch to %AC% when on battery, since it does not exist on your computer. AC and DC Switchers will be disabled.
+            ifEnabled := false
+        }
+        if(nameAndGUID[DC] = ""){
+            MsgBox, Warning: Cannot switch to %AC% when plugged in, since it does not exist on your computer. AC and DC Switchers will be disabled.
+            ifEnabled := false
+        }
+        ACMode := AC
+        DCMode := DC
+    }
+    ; shortcuts enabled
+    IniRead, WinF4, .\setting.ini, Shortcuts, WinF4
+    IniRead, WinF5, .\setting.ini, Shortcuts, WinF5
+    if (WinF4 = 0){
+        ifWinF4Enabled := false
+    }
+    else{
+        ifWinF4Enabled := true
+    }
+    if (WinF5 = 0){
+        ifWinF5Enabled := false
+    }
+    else{
+        ifWinF5Enabled := true
+    }
     ; start AC/DC auto switch
-    #Persistent
-    SetTimer, powerPlanAutoManage, 100
+    if (ifEnabled){
+        #Persistent
+        SetTimer, powerPlanAutoManage, 100
+    }
 }
 showAndMonitor(){
     ; global ifMonitoring
@@ -371,16 +384,16 @@ monitorForSelection(){
         osdTemp := New OSD
         if (nameAndCommand[schemeTemp_en] != ""){
             commandTemp := nameAndCommand[schemeTemp_en]
-            Run, %commandTemp%
+            Run, % commandTemp . nameAndGUID[schemeTemp_en]
         }
         else{
             commandTemp := nameAndCommand["any"]
             ; MsgBox % nameAndGUID[schemeTemp_en]
             Run, % commandTemp . nameAndGUID[schemeTemp_en]
         }
-        sleep, 500
-        DisplayOSD(osdTemp, getActiveScheme())
-        ; DisplayOSD(osdTemp, schemeTemp)
+        DisplayOSD(osdTemp, schemeTemp)
+        ; sleep, 500
+        ; DisplayOSD(osdTemp, getActiveScheme())
         planListObj.hide()
         planListObj.destroy()
         planListObj := 0
@@ -454,9 +467,9 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Offline
-            Run, % nameAndCommand[translateToEn(DCMode)]
+            Run, % nameAndCommand[translateToEn(DCMode)] . nameAndGUID[translateToEn(DCMode)]
             powerStateChange:=1
-            sleep, 5000		;wait for asus's osd
+            sleep, 2000		;wait for asus's osd
             ; message.showAndHide("☯️ Balanced")
             DisplayOSD(message, getActiveScheme())
         }
@@ -467,10 +480,10 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Online
-            Run, % nameAndCommand[translateToEn(ACMode)]
+            Run, % nameAndCommand[translateToEn(ACMode)] . nameAndGUID[translateToEn(ACMode)]
             ; Run, .\vbs\Balanced.vbs
             powerStateChange:=2
-            sleep, 5000
+            sleep, 2000
             ; message.showAndHide("☯️ Balanced")
             DisplayOSD(message, getActiveScheme())
         }
