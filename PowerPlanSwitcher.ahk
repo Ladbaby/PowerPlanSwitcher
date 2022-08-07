@@ -28,11 +28,11 @@ nameAndIcon := {"Power saver":".\icons\Power saver.ico"
 nameAndGUID := {}
 ; not en
 defaultPowerSchemeArray := ["Power saver", "Balanced", "High performance"]
-; ifACDCEnabled := 1
 ACMode:=0
 DCMode:=0
 ifWinF4Enabled := 1
 ifWinF5Enabled := 1
+ifG14:=0
 initializeProgram()
 
 #if ifWinF4Enabled
@@ -67,6 +67,7 @@ return
         global nameAndCommand
         global nameAndGUID
         global defaultPowerSchemeArray
+        global ifG14
 
         static counter := 2
         static previousCounter := 2
@@ -106,10 +107,10 @@ return
         osdTemp := New OSD
         temp := translateToEn(defaultPowerSchemeArray[counter])
         if (temp = "Power saver" || temp = "Balanced" || temp = "Cooler Gaming" || temp = "High performance" || temp = "Ultimate Performance"){
-            Run, % nameAndCommand[temp] . nameAndGUID[temp]
+            Run, % nameAndCommand[temp] . nameAndGUID[temp] . " " . ifG14
         }
         else{
-            Run, % nameAndCommand["any"] . nameAndGUID[temp]
+            Run, % nameAndCommand["any"] . nameAndGUID[temp] . " " . ifG14
         }
         DisplayOSD(osdTemp, defaultPowerSchemeArray[counter])
         ; sleep, 500
@@ -150,6 +151,7 @@ Enter::
         global focusedSchemeName
         global nameAndCommand
         global nameAndGUID
+        global ifG14
 
         ; close the plan list ui earlier, or it may seems too slow
         planListObj.hide()
@@ -160,10 +162,10 @@ Enter::
             focusedSchemeName_en := translateToEn(focusedSchemeName)
             osdTemp := New OSD
             if (focusedSchemeName_en != "Power saver" && focusedSchemeName_en != "Balanced" && focusedSchemeName_en != "Cooler Gaming" && focusedSchemeName_en != "High performance" && focusedSchemeName_en != "Ultimate Performance"){
-                Run, % nameAndCommand["any"] . nameAndGUID[focusedSchemeName_en]
+                Run, % nameAndCommand["any"] . nameAndGUID[focusedSchemeName_en] . " " . ifG14
             }
             else{
-                Run, % nameAndCommand[focusedSchemeName_en] . nameAndGUID[focusedSchemeName_en]
+                Run, % nameAndCommand[focusedSchemeName_en] . nameAndGUID[focusedSchemeName_en] . " " . ifG14
             }
             DisplayOSD(osdTemp, focusedSchemeName)
             ; sleep, 500
@@ -192,7 +194,24 @@ initializeProgram(){
     global DCMode
     global ifWinF4Enabled
     global ifWinF5Enabled
-    ; global ifACDCEnabled
+    global ifG14
+    ; if the computer is ROG G14
+    IniRead, ifG14, .\setting.ini, G14, isG14
+    ; shortcuts enabled
+    IniRead, WinF4, .\setting.ini, Shortcuts, WinF4
+    IniRead, WinF5, .\setting.ini, Shortcuts, WinF5
+    if (WinF4 = 0){
+        ifWinF4Enabled := false
+    }
+    else{
+        ifWinF4Enabled := true
+    }
+    if (WinF5 = 0){
+        ifWinF5Enabled := false
+    }
+    else{
+        ifWinF5Enabled := true
+    }
     ; initialize tray icon
     M1 := getActiveScheme()
     M1_en := translateToEn(M1)
@@ -250,21 +269,6 @@ initializeProgram(){
         }
         ACMode := AC
         DCMode := DC
-    }
-    ; shortcuts enabled
-    IniRead, WinF4, .\setting.ini, Shortcuts, WinF4
-    IniRead, WinF5, .\setting.ini, Shortcuts, WinF5
-    if (WinF4 = 0){
-        ifWinF4Enabled := false
-    }
-    else{
-        ifWinF4Enabled := true
-    }
-    if (WinF5 = 0){
-        ifWinF5Enabled := false
-    }
-    else{
-        ifWinF5Enabled := true
     }
     ; start AC/DC auto switch
     if (ifEnabled){
@@ -371,6 +375,7 @@ monitorForSelection(){
     ; global ifMonitoring
     global GUI_ID
     global nameAndGUID
+    global ifG14
     ; SetTimer LoopStart, 100
     ; LoopStart:
     ; if (ifMonitoring = 0){
@@ -384,12 +389,12 @@ monitorForSelection(){
         osdTemp := New OSD
         if (nameAndCommand[schemeTemp_en] != ""){
             commandTemp := nameAndCommand[schemeTemp_en]
-            Run, % commandTemp . nameAndGUID[schemeTemp_en]
+            Run, % commandTemp . nameAndGUID[schemeTemp_en] . " " . ifG14
         }
         else{
             commandTemp := nameAndCommand["any"]
             ; MsgBox % nameAndGUID[schemeTemp_en]
-            Run, % commandTemp . nameAndGUID[schemeTemp_en]
+            Run, % commandTemp . nameAndGUID[schemeTemp_en] . " " . ifG14
         }
         DisplayOSD(osdTemp, schemeTemp)
         ; sleep, 500
@@ -467,7 +472,7 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Offline
-            Run, % nameAndCommand[translateToEn(DCMode)] . nameAndGUID[translateToEn(DCMode)]
+            Run, % nameAndCommand[translateToEn(DCMode)] . nameAndGUID[translateToEn(DCMode)] . " " . ifG14
             powerStateChange:=1
             sleep, 2000		;wait for asus's osd
             ; message.showAndHide("☯️ Balanced")
@@ -480,8 +485,7 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Online
-            Run, % nameAndCommand[translateToEn(ACMode)] . nameAndGUID[translateToEn(ACMode)]
-            ; Run, .\vbs\Balanced.vbs
+            Run, % nameAndCommand[translateToEn(ACMode)] . nameAndGUID[translateToEn(ACMode)]  . " " . ifG14
             powerStateChange:=2
             sleep, 2000
             ; message.showAndHide("☯️ Balanced")
