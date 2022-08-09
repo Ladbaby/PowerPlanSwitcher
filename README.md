@@ -1,4 +1,6 @@
 ﻿# PowerPlanSwitcher 🔋
+中文版在[这里](README_cn.md)
+
 Switching between different power plans with ease, including shortcuts and decent GUI.
 
 If you are a user of ROG G14 (G401IV to be exact), then congratulations! You're able to additionally modified fan curves and TDPs at the same time!

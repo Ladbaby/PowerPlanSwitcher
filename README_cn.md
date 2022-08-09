@@ -1,4 +1,6 @@
 # PowerPlanSwitcher 🔋
+English version is [here](README.md)
+
 通过快捷键、GUI点击等多种方式，轻松在不同的电源计划之间切换。
 
 假如你是ROG 幻14的用户 (G401IV)，那么恭喜你，你可以顺带调整风扇曲线和热设计功耗 (TDP)。
