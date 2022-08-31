@@ -27,7 +27,7 @@ nameAndIcon := {"Power saver":".\icons\Power saver.ico"
 ; en
 nameAndGUID := {}
 ; not en
-defaultPowerSchemeArray := ["Power saver", "Balanced", "High performance"]
+defaultPowerSchemeArray := []
 ACMode:=0
 DCMode:=0
 ifWinF4Enabled := 1
