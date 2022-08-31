@@ -5,6 +5,7 @@ English version is [here](README.md)
 
 假如你是ROG 幻14的用户 (G401IV)，那么恭喜你，你可以顺带调整风扇曲线和热设计功耗 (TDP)。
 
+视频介绍[在这里](https://www.bilibili.com/video/BV17N4y1c73i)
 ## 介绍
 包含以下功能：
 - 根据当前电源计划，实时更新的托盘图标：
