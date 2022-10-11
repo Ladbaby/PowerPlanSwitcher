@@ -112,6 +112,15 @@ Class OSD {
         Gui, % this.hwnd ":Default"
         OnMessage(0x201, this.onDragFunc, 0)
         OnMessage(0x205, this.onRClickFunc, 0)
+        SetWinDelay -1
+        duration := 100
+        MaxTemp := 200
+        N := 10
+        Loop %N%{
+            currentTp := Round(MaxTemp - A_Index * (255 / N))
+            WinSet, Transparent, %currentTp%, % "ahk_id " . this.hwnd
+            Sleep % duration / N
+        }
         Gui, Hide
         this.state:= 0
     }
