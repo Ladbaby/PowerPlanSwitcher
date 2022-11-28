@@ -58,3 +58,9 @@ They can also be modified, as long as you change the corresponding vbs scripts u
     Then double click on `PowerPlanSwitcher.exe`, you'll see the icon on task bar/tray.
 
     If you wish it to launch at startup, create a shortcut for `PowerPlanSwitcher.exe`, then put it in "Startup" folder (<kbd>Win</kbd>+<kbd>R</kbd>, enter `shell:startup` to enter the "Startup" folder)
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/Ladbaby/PowerPlanSwitcher.svg)](https://starchart.cc/Ladbaby/PowerPlanSwitcher)
+
