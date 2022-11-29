@@ -60,6 +60,7 @@ English version is [here](README.md)
     假如你希望本程序开机就启动，请右键`PowerPlanSwitcher.exe`选择创建快捷方式，然后把这个快捷方式剪切放到Startup文件夹下 (快捷键<kbd>Win</kbd>+<kbd>R</kbd>以调出“运行”窗口，输入命令`shell:startup`然后回车，即可进入Startup文件夹)
 
 
-## Stargazers over time
+## Star History
 
-[![Stargazers over time](https://starchart.cc/Ladbaby/PowerPlanSwitcher.svg)](https://starchart.cc/Ladbaby/PowerPlanSwitcher)
+[![Star History Chart](https://api.star-history.com/svg?repos=Ladbaby/PowerPlanSwitcher&type=Date)](https://star-history.com/#Ladbaby/PowerPlanSwitcher&Date)
+
