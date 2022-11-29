@@ -16,13 +16,13 @@ English version is [here](README.md)
     - 🔋: 其它
 - 点击托盘图标后显示在屏幕右下角的菜单：
 
-    ![](image/2022-08-07-20-17-49.png)
+    ![](https://raw.githubusercontent.com/Ladbaby/PowerPlanSwitcher/master/image/2022-08-07-20-17-49.png)
 - 在插上电源或者拔掉电源 (使用电池)的时候，自动切换至提前设定好的模式 (默认的值均为“平衡”)
 - 使用<kbd>Win</kbd>+<kbd>F4</kbd>来显示上述的菜单，继续按则依次遍历所有电源计划，松开快捷键以选中。使用体验类似于Windows下使用<kbd>alt</kbd>+<kbd>tab</kbd>来切换不同窗口
 - 使用<kbd>Win</kbd>+<kbd>F5</kbd>来在三个电源计划之间即时切换 (默认为“节能”、“平衡”和“高性能”)。类似于华硕或ROG电脑上借助Armoury Crate使用<kbd>Fn</kbd>+<kbd>F5</kbd>切换的逻辑
 - 在切换电源计划之后显示一个半透明提示窗
 
-    ![](image/Screenshot%20(21).png)
+    ![](https://raw.githubusercontent.com/Ladbaby/PowerPlanSwitcher/master/image/Screenshot%20(21).png)
 
     > 注：osd部分的代码并非由我主要完成，我仅在别人的代码上做了修改，但是我找不到原作者的仓库了，十分抱歉。
 - 通过`setting.ini`文件来对本应用进行设置，包括：

@@ -16,13 +16,13 @@ The following features are supported:
     - 🔋: Others
 - Menu of power plans to choose from after clicking on the tray icon, displayed at bottom right area.
 
-    ![](https://github.com/Ladbaby/PowerPlanSwitcher/blob/master/image/2022-08-07-20-17-49.png)
+    ![](https://raw.githubusercontent.com/Ladbaby/PowerPlanSwitcher/master/image/2022-08-07-20-17-49.png)
 - Automatically switch to specific power plans when on battery or plugged in (both default to "Balanced").
 - <kbd>Win</kbd>+<kbd>F4</kbd> to switch between different power plans in the menu, similar to the experience of switching different windows using <kbd>alt</kbd>+<kbd>tab</kbd>.
 - <kbd>Win</kbd>+<kbd>F5</kbd> to switch between 3 predefined power plans instantly (default to "Power saver", "Balanced" and "High performance"). Similar to <kbd>Fn</kbd>+<kbd>F5</kbd> on Asus/ROG computers, which use Armoury Crate by default.
 - OSD after switching to different plans
 
-    ![](https://github.com/Ladbaby/PowerPlanSwitcher/blob/master/image/Screenshot%20(21).png)
+    ![](https://raw.githubusercontent.com/Ladbaby/PowerPlanSwitcher/master/image/Screenshot%20(21).png)
 
     > osd is not mainly implemented by me. I make some modifications based on others' code, but forget the repo's name. Sorry for the original author.
 - Editable configurations in `setting.ini`, in which you can modify:
