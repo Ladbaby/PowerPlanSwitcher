@@ -6,8 +6,16 @@ Switching between different power plans with ease, including shortcuts and decen
 If you are a user of ROG G14 (G401IV to be exact), then congratulations! You're able to additionally modified fan curves and TDPs at the same time!
 
 Video introduction in Chinese is [here](https://www.bilibili.com/video/BV17N4y1c73i)
+
+---
+
+Update 2023.8.25: If you are an Asus/ROG user (not limited to G14), I highly recommend you give [seerge/g-helper](https://github.com/seerge/g-helper) a try! It's an amazing alternative to Armoury Crate. 
+
+
 ## Introduction
+
 The following features are supported:
+
 - Live-updated tray icon according to current power plan:
     - 🍃: Power Saver
     - ☯️: Balanced

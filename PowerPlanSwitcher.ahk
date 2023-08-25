@@ -82,7 +82,7 @@ return
         else if (M1 = defaultPowerSchemeArray[2]){
             counter := 2
         }
-        else if (M1 = defaultPowerSchemeArray[3]){
+        else if (M1 = defaultPowerSchemeArray[3] || M1 = "Cooler Gaming" || M1 = "High performance" || M1 = "Ultimate Performance"){
             counter := 3
         }
         if(counter = 2) {

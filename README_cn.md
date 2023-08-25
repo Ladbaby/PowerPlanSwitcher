@@ -6,7 +6,13 @@ English version is [here](README.md)
 假如你是ROG 幻14的用户 (G401IV)，那么恭喜你，你可以顺带调整风扇曲线和热设计功耗 (TDP)。
 
 视频介绍[在这里](https://www.bilibili.com/video/BV17N4y1c73i)
+
+---
+
+更新 2023.8.25: 如果你是华硕/ROG（不局限于幻14）用户，那我推荐你先尝试一下[seerge/g-helper](https://github.com/seerge/g-helper)，这是一个非常优秀的 Armoury Crate 的替代品。
+
 ## 介绍
+
 包含以下功能：
 - 根据当前电源计划，实时更新的托盘图标：
     - 🍃: 节能
