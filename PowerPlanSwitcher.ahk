@@ -472,7 +472,12 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Offline
-            Run, % nameAndCommand[translateToEn(DCMode)] . nameAndGUID[translateToEn(DCMode)] . " " . ifG14
+            if (DCMode = "Power saver" || DCMode = "Balanced" || DCMode = "Cooler Gaming" || DCMode = "High performance" || DCMode = "Ultimate Performance"){
+                Run, % nameAndCommand[translateToEn(DCMode)] . nameAndGUID[translateToEn(DCMode)] . " " . ifG14
+            }
+            else{
+                Run, % nameAndCommand["any"] . nameAndGUID[translateToEn(DCMode)] . " " . ifG14
+            }
             powerStateChange:=1
             sleep, 2000		;wait for asus's osd
             ; message.showAndHide("☯️ Balanced")
@@ -485,7 +490,12 @@ powerPlanAutoManage()
         {
             message := New OSD
             ; acLineStatus = Online
-            Run, % nameAndCommand[translateToEn(ACMode)] . nameAndGUID[translateToEn(ACMode)]  . " " . ifG14
+            if (ACMode = "Power saver" || ACMode = "Balanced" || ACMode = "Cooler Gaming" || ACMode = "High performance" || ACMode = "Ultimate Performance"){
+                Run, % nameAndCommand[translateToEn(ACMode)] . nameAndGUID[translateToEn(ACMode)] . " " . ifG14
+            }
+            else{
+                Run, % nameAndCommand["any"] . nameAndGUID[translateToEn(ACMode)] . " " . ifG14
+            }
             powerStateChange:=2
             sleep, 2000
             ; message.showAndHide("☯️ Balanced")
