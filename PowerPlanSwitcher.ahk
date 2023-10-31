@@ -246,12 +246,14 @@ initializeProgram(){
         }
     }
     ; initialize 3 default modes for win+f5
-    Loop 3{
-        IniRead, OutputVar, .\setting.ini, DefaultThreeModes, %A_Index%
-        defaultPowerSchemeArray.push(OutputVar)
-        if(nameAndGUID[OutputVar] = ""){
-            MsgBox, Warning: %OutputVar% does not exist on your computer, Win+F5 shortcut will be disabled
-            ifWinF5Enabled := false
+    if (ifWinF5Enabled){
+        Loop 3{
+            IniRead, OutputVar, .\setting.ini, DefaultThreeModes, %A_Index%
+            defaultPowerSchemeArray.push(OutputVar)
+            if(nameAndGUID[OutputVar] = ""){
+                MsgBox, Warning: %OutputVar% does not exist on your computer, Win+F5 shortcut will be disabled
+                ifWinF5Enabled := false
+            }
         }
     }
     ; initialize AC/DC modes to switch to
