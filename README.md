@@ -67,6 +67,13 @@ They can also be modified, as long as you change the corresponding vbs scripts u
 
     If you wish it to launch at startup, create a shortcut for `PowerPlanSwitcher.exe`, then put it in "Startup" folder (<kbd>Win</kbd>+<kbd>R</kbd>, enter `shell:startup` to enter the "Startup" folder)
 
+## Similar Apps
+
+There're many similar apps:
+
+- [petrroll/PowerSwitcher](https://github.com/petrroll/PowerSwitcher): Windows native GUI
+- [SebastianBecker2/PowerPlanSwitcher](https://github.com/SebastianBecker2/PowerPlanSwitcher): Supports hotkey customization and switching based on process
+
 
 ## Star History
 
