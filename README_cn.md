@@ -59,11 +59,13 @@ English version is [here](README.md)
     没有什么特别的安装步骤，不需要配置环境什么的，只要把这个仓库里的文件都下载到电脑上即可
 - 使用
 
-    在正式开始使用之前，请确保你已经检查了`setting.ini`中的**所有设置项**，非幻14的机主请尤其注意
+    - 在正式开始使用之前，请确保你已经检查了`setting.ini`中的**所有设置项**，非幻14的机主请尤其注意
 
-    检查完毕后，双击`PowerPlanSwitcher.exe`即可运行，你将会在任务栏或者是托盘区见到该程序的图标
+    - 检查完毕后，双击`PowerPlanSwitcher.exe`即可运行，你将会在任务栏或者是托盘区见到该程序的图标
 
-    假如你希望本程序开机就启动，请右键`PowerPlanSwitcher.exe`选择创建快捷方式，然后把这个快捷方式剪切放到Startup文件夹下 (快捷键<kbd>Win</kbd>+<kbd>R</kbd>以调出“运行”窗口，输入命令`shell:startup`然后回车，即可进入Startup文件夹)
+    - 假如你希望本程序开机就启动，请右键`PowerPlanSwitcher.exe`选择创建快捷方式，然后把这个快捷方式剪切放到Startup文件夹下 (快捷键<kbd>Win</kbd>+<kbd>R</kbd>以调出“运行”窗口，输入命令`shell:startup`然后回车，即可进入Startup文件夹)
+
+    - 假如你希望快捷键在游戏中也可以使用，可以参考[这里](https://www.autohotkey.com/board/topic/111737-how-to-make-ahk-work-in-most-games-the-basics/)。让程序以管理员模式运行就已经可以让它在许多游戏里生效。
 
 ## 相似应用
 

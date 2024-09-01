@@ -61,11 +61,13 @@ They can also be modified, as long as you change the corresponding vbs scripts u
     No installation process is needed, simply download all the files
 - Usage
 
-    Before you start the program, make sure you've **checked all configurations** in `setting.ini`, especially if you're not a G14 user.
+    - Before you start the program, make sure you've **checked all configurations** in `setting.ini`, especially if you're not a G14 user.
 
-    Then double click on `PowerPlanSwitcher.exe`, you'll see the icon on task bar/tray.
+    - Then double click on `PowerPlanSwitcher.exe`, you'll see the icon on task bar/tray.
 
-    If you wish it to launch at startup, create a shortcut for `PowerPlanSwitcher.exe`, then put it in "Startup" folder (<kbd>Win</kbd>+<kbd>R</kbd>, enter `shell:startup` to enter the "Startup" folder)
+    - If you wish it to launch at startup, create a shortcut for `PowerPlanSwitcher.exe`, then put it in "Startup" folder (<kbd>Win</kbd>+<kbd>R</kbd>, enter `shell:startup` to enter the "Startup" folder)
+
+    - If you want the shortcuts work in games, you may refer to this [post](https://www.autohotkey.com/board/topic/111737-how-to-make-ahk-work-in-most-games-the-basics/)
 
 ## Similar Apps
 
